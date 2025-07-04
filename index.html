@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Khiladi786 Admin Panel</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <h1>Khiladi786 Admin Dashboard</h1>
+  <p>Admin Wallet: ₹<span id="adminCoins">Loading...</span></p>
+
+  <input type="text" id="playerName" placeholder="Player Name" />
+  <input type="number" id="coinAmount" placeholder="Amount" />
+  <div>
+    <button onclick="createPlayer()">Create Player</button>
+    <button onclick="deposit()">Deposit</button>
+    <button onclick="withdraw()">Withdraw</button>
+    <button onclick="loadData()">Refresh</button>
+  </div>
+
+  <h3>Players</h3>
+  <ul id="playersList"></ul>
+
+  <script>
+    async function loadData() {
+      const res = await fetch('/api/users?action=list');
+      const data = await res.json();
+      document.getElementById('adminCoins').innerText = data.adminCoins;
+      const list = document.getElementById('playersList');
+      list.innerHTML = '';
+      data.players.forEach(p => {
+        list.innerHTML += `<li>${p.name} - ₹${p.coins}</li>`;
+      });
+    }
+
+    async function createPlayer() {
+      const name = document.getElementById('playerName').value;
+      const coins = document.getElementById('coinAmount').value;
+      const res = await fetch(`/api/users?name=${name}&action=create&coins=${coins}`);
+      const data = await res.json();
+      alert(data.message || data.error);
+      loadData();
+    }
+
+    async function deposit() {
+      const name = document.getElementById('playerName').value;
+      const coins = document.getElementById('coinAmount').value;
+      const res = await fetch(`/api/users?name=${name}&action=deposit&coins=${coins}`);
+      const data = await res.json();
+      alert(data.message || data.error);
+      loadData();
+    }
+
+    async function withdraw() {
+      const name = document.getElementById('playerName').value;
+      const coins = document.getElementById('coinAmount').value;
+      const res = await fetch(`/api/users?name=${name}&action=withdraw&coins=${coins}`);
+      const data = await res.json();
+      alert(data.message || data.error);
+      loadData();
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
